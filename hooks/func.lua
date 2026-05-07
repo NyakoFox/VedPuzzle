@@ -61,11 +61,6 @@ function PUZZLE_LOAD(levelassetsfolder)
     Happy puzzling!
 ]]
 ]=])
-        if success then
-            dialog.create("Created puzzle.lua!", DBS.OK)
-        else
-            dialog.create("Could not create puzzle.lua!", DBS.OK)
-        end
     end
 
     dofile(love.filesystem.getSaveDirectory() .. "/" .. PUZZLE_PATH .. "puzzle_defaults.lua")
