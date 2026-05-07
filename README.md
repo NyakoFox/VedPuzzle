@@ -58,6 +58,7 @@ Puzzle has the following editors/sections available:
 
 - `maineditor` (main editor)
 - `scripteditor` (script editor)
+- `scriptlist` (script list)
 
 ... with more to come in the future!
 
@@ -70,6 +71,7 @@ Anything marked with **ADV** is more advanced and, most of the time, not necessa
 ### Globals
 
 - `puzzle(section)` - Gets a "puzzle section" by ID. Returns a PuzzleSection.
+- **ADV:** `PUZZLE_ON_LOAD(callback)` - Registers a callback to be called when puzzle loads. Can be called multiple times. Intended for plugins.
 
 ### PuzzleSection
 
@@ -86,6 +88,28 @@ Anything marked with **ADV** is more advanced and, most of the time, not necessa
 - `menu:submenu(label, id)` - Adds a "simple" submenu to the menu.
 - **ADV:** `menu:nextPage()` - Goes to the next page of the menu, wrapping around if there are no more pages.
 - **ADV:** `menu:previousPage()` - Goes to the previous page of the menu, wrapping around if there are no more pages.
+
+## Plugins
+
+You can add puzzle buttons through plugins. The best way is to register them in `love_load_end.lua`:
+
+```lua
+-- Check if puzzle exists
+if puzzle ~= nil then
+    -- It does, register our buttons
+    PUZZLE_ON_LOAD(function()
+        local my_submenu = puzzle("maineditor"):submenu("Plugin Menu", "pluginmenu")
+
+        my_submenu:button("Say 1", function() dialog.create("1!", DBS.OK) end)
+        my_submenu:button("Say 2", function() dialog.create("2!", DBS.OK) end)
+        my_submenu:button("Say 3", function() dialog.create("3!", DBS.OK) end)
+    end)
+end
+```
+
+`PUZZLE_ON_LOAD` can be called multiple times; namely, whenever the user tries to reload puzzle scripts, which happens very often.
+
+Do not register puzzle buttons outside of this callback! They will disappear if the user reloads puzzle scripts.
 
 ## Advanced
 

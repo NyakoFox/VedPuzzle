@@ -24,6 +24,7 @@ end
 
 function PUZZLE_LOAD(levelassetsfolder)
     -- Initialize (or reset) puzzle's state
+    PUZZLE_LOADED = false
     PUZZLE_SECTIONS = {}
     PUZZLE_MAINEDITOR_SHOWN = false
     PUZZLE_SCRIPTEDITOR_SHOWN = false
@@ -69,6 +70,14 @@ function PUZZLE_LOAD(levelassetsfolder)
 
     dofile(love.filesystem.getSaveDirectory() .. "/" .. PUZZLE_PATH .. "puzzle_defaults.lua")
 
+    -- Plugin callbacks
+    for _, callback in ipairs(PUZZLE_PLUGIN_CALLBACKS) do
+        local success, result = pcall(callback)
+        if not success then
+            dialog.create("Error in puzzle plugin callback: " .. tostring(result), DBS.OK)
+        end
+    end
+
     local success, result = PUZZLE_DOFILE_SAFE(love.filesystem.getSaveDirectory() .. "/puzzle.lua")
     if success then
         cons("Loaded user puzzle script")
@@ -86,6 +95,8 @@ function PUZZLE_LOAD(levelassetsfolder)
             cons(result)
         end
     end
+
+    PUZZLE_LOADED = true
 end
 
 function PUZZLE_REGISTER_SECTION(name, section)
@@ -95,4 +106,15 @@ end
 
 function puzzle(name)
     return PUZZLE_SECTIONS[name]
+end
+
+function PUZZLE_ON_LOAD(func)
+    table.insert(PUZZLE_PLUGIN_CALLBACKS, func)
+
+    if PUZZLE_LOADED then
+        local success, result = pcall(func)
+        if not success then
+            dialog.create("Error in puzzle plugin callback: " .. tostring(result), DBS.OK)
+        end
+    end
 end

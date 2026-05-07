@@ -30,7 +30,7 @@ local function shift_room(offset_x, offset_y)
 end
 
 local puzzle_menu = puzzle("maineditor"):submenu("Puzzle", "puzzle")
-puzzle_menu:button("Create puzzle.lua", function()
+puzzle_menu:button("Create Lua file", function()
     if file_exists(getlevelassetsfolder() .. "/puzzle.lua") then
         dialog.create("A puzzle.lua file already exists in this level's assets folder!", DBS.OK)
         return
@@ -58,6 +58,7 @@ puzzle_menu:button("Create puzzle.lua", function()
     Happy puzzling!
 ]]
 ]=])
+        dialog.create("Created puzzle.lua!", DBS.OK)
     end
 end)
 
