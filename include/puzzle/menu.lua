@@ -35,14 +35,23 @@ end
 
 function PuzzleMenu:draw()
     local page = self:getCurrentPage()
-    for i, v in ipairs(page) do
-        rbutton(v.name, i, self:getYOffset(), false, self:getButtonSpacing())
+
+    if #page == 0 then
+        local y = self:getYOffset() + ((self:getButtonSpacing() * math.floor(self.parent.buttons_per_page)) / 2)
+        love.graphics.setColor(192, 192, 192)
+        font_ui:printf("This page has no buttons, sorry!", love.graphics.getWidth() - (128 - 8), y, 112, "center")
+        love.graphics.setColor(255, 255, 255)
+        return
     end
 
-    local index = self.parent.buttons_per_page
+    for i, v in ipairs(page) do
+        rbutton(v.name, i - 1, self:getYOffset(), false, self:getButtonSpacing())
+    end
+
+    local index = self.parent.buttons_per_page - 1
 
     if self.has_return_button then
-        rbutton("Return", index, self:getYOffset(), false, self:getButtonSpacing())
+        rbutton("<< Back", index, self:getYOffset(), false, self:getButtonSpacing())
         index = index - 1
     end
 
@@ -148,7 +157,7 @@ function PuzzleMenu:click()
     local page = self:getCurrentPage()
     -- normal buttons
     for i, v in ipairs(page) do
-        if onrbutton(i, self:getYOffset(), false, self:getButtonSpacing()) then
+        if onrbutton(i - 1, self:getYOffset(), false, self:getButtonSpacing()) then
             mousepressed = true
             if v.func then
                 local success, result = pcall(v.func)
@@ -162,7 +171,7 @@ function PuzzleMenu:click()
 
     -- return and nav buttons
 
-    local index = self.parent.buttons_per_page
+    local index = self.parent.buttons_per_page - 1
     if self.has_return_button then
         if onrbutton(index, self:getYOffset(), false, self:getButtonSpacing()) then
             mousepressed = true

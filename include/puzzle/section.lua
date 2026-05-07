@@ -18,6 +18,14 @@ function PuzzleSection:new(o)
     return o
 end
 
+function PuzzleSection:reset()
+    self.current_menu = "main"
+    self.history = {}
+    for _, menu in pairs(self.menus) do
+        menu.current_page = 1
+    end
+end
+
 function PuzzleSection:getMenu(name)
     return self.menus[name]
 end

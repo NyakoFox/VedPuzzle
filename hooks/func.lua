@@ -29,8 +29,9 @@ function PUZZLE_LOAD(levelassetsfolder)
     PUZZLE_SCRIPTEDITOR_SHOWN = false
 
     -- Register sections
-    PUZZLE_REGISTER_SECTION("maineditor", PuzzleSection:new({ buttons_per_page = 13, y_offset = 40, button_spacing = 20 }))
-    PUZZLE_REGISTER_SECTION("scripteditor", PuzzleSection:new({ buttons_per_page = 22, y_offset = 10, button_spacing = 20 }))
+    PUZZLE_REGISTER_SECTION("maineditor", PuzzleSection:new({ buttons_per_page = 13, y_offset = 60, button_spacing = 20 }))
+    PUZZLE_REGISTER_SECTION("scripteditor", PuzzleSection:new({ buttons_per_page = 22, y_offset = 30, button_spacing = 20 }))
+    PUZZLE_REGISTER_SECTION("scriptlist", PuzzleSection:new({ buttons_per_page = 22, button_spacing = 20 }))
 
     -- Load puzzle files
     if not love.filesystem.exists("puzzle.lua") then
@@ -59,6 +60,11 @@ function PUZZLE_LOAD(levelassetsfolder)
     Happy puzzling!
 ]]
 ]=])
+        if success then
+            dialog.create("Created puzzle.lua!", DBS.OK)
+        else
+            dialog.create("Could not create puzzle.lua!", DBS.OK)
+        end
     end
 
     dofile(love.filesystem.getSaveDirectory() .. "/" .. PUZZLE_PATH .. "puzzle_defaults.lua")
@@ -80,7 +86,6 @@ function PUZZLE_LOAD(levelassetsfolder)
             cons(result)
         end
     end
-
 end
 
 function PUZZLE_REGISTER_SECTION(name, section)

@@ -29,7 +29,44 @@ local function shift_room(offset_x, offset_y)
     finish_undo("PUZZLE SHIFT ROOM")
 end
 
-local shift_menu = puzzle("maineditor"):submenu("Shift", "shift")
+local puzzle_menu = puzzle("maineditor"):submenu("Puzzle", "puzzle")
+puzzle_menu:button("Create puzzle.lua", function()
+    if file_exists(getlevelassetsfolder() .. "/puzzle.lua") then
+        dialog.create("A puzzle.lua file already exists in this level's assets folder!", DBS.OK)
+        return
+    else
+        writelevelfile(getlevelassetsfolder() .. "/puzzle.lua", [=[
+--[[
+    Welcome to puzzle! You can use this file to add custom buttons in Ved, specific to this level, which can run any Lua code you want.
+
+    Here's an example button:
+
+    puzzle("maineditor"):button("Hello", function()
+        dialog.create("Hello, world!", DBS.OK)
+    end)
+
+    This adds a "Hello" button to the main editor, which shows a dialog box when pressed.
+
+    Adding submenus are also possible (and you should put most things in one!):
+
+    local menu = puzzle("maineditor"):submenu("Test menu", "testmenu")
+    menu:button("Test button 1", function() dialog.create("You pressed test button 1!", DBS.OK) end)
+    menu:button("Test button 2", function() dialog.create("You pressed test button 2!", DBS.OK) end)
+
+    Further documentation can be found in the GitHub repository: https://github.com/NyakoFox/VedPuzzle/
+
+    Happy puzzling!
+]]
+]=])
+    end
+end)
+
+puzzle_menu:button("Reload puzzle scripts", function()
+    PUZZLE_LOAD(getlevelassetsfolder())
+    dialog.create("Reloaded puzzle scripts!", DBS.OK)
+end)
+
+local shift_menu = puzzle("maineditor"):submenu("Shift room", "shift")
 shift_menu:button("Shift room " .. arrow_left, function() shift_room(-1, 0) end)
 shift_menu:button("Shift room " .. arrow_right, function() shift_room(1, 0) end)
 shift_menu:button("Shift room " .. arrow_up, function() shift_room(0, -1) end)

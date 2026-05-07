@@ -32,7 +32,7 @@ function load_vvvvvv_tilesets(levelassetsfolder)
 	hoverdraw(image.cutbtn, love.graphics.getWidth()-120+48, 40, 16, 16, 1)
 	hoverdraw(image.copybtn, love.graphics.getWidth()-120+64, 40, 16, 16, 1)
 	hoverdraw(image.pastebtn, love.graphics.getWidth()-120+80, 40, 16, 16, 1)
-	hoverdraw("ui/images/puzzle_icon", love.graphics.getWidth()-120+96, 40, 16, 16, 1)]],
+	hoverdraw(PUZZLE_MAINEDITOR_SHOWN and "ui/images/puzzle_icon_active" or "ui/images/puzzle_icon", love.graphics.getWidth()-120+96, 40, 16, 16, 1)]],
 			ignore_error = false,
 			luapattern = false,
 			allowmultiple = false
@@ -70,6 +70,7 @@ function load_vvvvvv_tilesets(levelassetsfolder)
 			replace = [[
 		elseif mouseon(love.graphics.getWidth()-120+96, 40, 16, 16) then
 			PUZZLE_MAINEDITOR_SHOWN = not PUZZLE_MAINEDITOR_SHOWN
+			puzzle("maineditor"):reset()
 			mousepressed = true
 		elseif onrbutton(1, 40, false, 20) then]],
 		},
@@ -131,7 +132,7 @@ function load_vvvvvv_tilesets(levelassetsfolder)
 		{
 			find = [[showhotkey("q", love.graphics.getWidth()-24+8-2, 8-2)]],
 			replace = [[showhotkey("q", love.graphics.getWidth()-24+8-2, 8-2)
-	hoverdraw("ui/images/puzzle_icon", love.graphics.getWidth()-24 - 16, 8, 16, 16, 1)
+	hoverdraw(PUZZLE_SCRIPTEDITOR_SHOWN and "ui/images/puzzle_icon_active" or "ui/images/puzzle_icon", love.graphics.getWidth()-24 - 16, 8, 16, 16, 1)
 	if PUZZLE_SCRIPTEDITOR_SHOWN then
 		puzzle("scripteditor"):draw()
 	else
@@ -155,6 +156,7 @@ rbutton({L.RETURN, "b"}, 0, nil, true)
 			replace = [[
 elseif mouseon(love.graphics.getWidth()-24 - 16, 8, 16, 16) and not mousepressed then
 	PUZZLE_SCRIPTEDITOR_SHOWN = not PUZZLE_SCRIPTEDITOR_SHOWN
+	puzzle("scripteditor"):reset()
 	mousepressed = true
 end
 
@@ -169,6 +171,47 @@ elseif onrbutton(1) then]],
 end
 
 if table.contains({]],
+			ignore_error = false,
+			luapattern = false,
+			allowmultiple = false
+		}
+	},
+	["uis/scriptlist/draw"] =
+	{
+		-- SHOW PUZZLE BUTTON IN SCRIPT LIST
+		{
+			find = [[rbutton({L.NEW, "N"}, 0)]],
+			replace = [[
+if PUZZLE_SCRIPTLIST_SHOWN then
+	puzzle("scriptlist"):draw()
+	rbutton(L.RETURN, 0, nil, true)
+else
+rbutton({L.NEW, "N"}, 0)
+rbutton("Puzzle", 3)]],
+			ignore_error = false,
+			luapattern = false,
+			allowmultiple = false
+		},
+		{
+			find = [[if nodialog and not mousepressed and love.mouse.isDown("l") then]],
+			replace = [[end
+if nodialog and not mousepressed and love.mouse.isDown("l") then
+if PUZZLE_SCRIPTLIST_SHOWN then
+	if onrbutton(0, nil, true) then
+		PUZZLE_SCRIPTLIST_SHOWN = false
+		mousepressed = true
+		return
+	end
+	puzzle("scriptlist"):click()
+	return
+end
+if onrbutton(3) then
+	mousepressed = true
+	PUZZLE_SCRIPTLIST_SHOWN = not PUZZLE_SCRIPTLIST_SHOWN
+	puzzle("scriptlist"):reset()
+	return
+end
+]],
 			ignore_error = false,
 			luapattern = false,
 			allowmultiple = false
