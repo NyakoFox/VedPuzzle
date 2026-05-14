@@ -75,7 +75,7 @@ end
 --- Shortcut for adding a submenu to the main menu
 function PuzzleMenu:submenu(label, id)
     local menu = PuzzleMenu:new()
-    self:registerMenu(id, menu)
+    self.parent:registerMenu(id, menu)
 
     self:button(label .. " >", function()
         self.parent:pushMenu(id)
