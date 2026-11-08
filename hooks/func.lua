@@ -17,6 +17,17 @@ function PUZZLE_ERROR(label, message)
     cons(str)
 end
 
+function PUZZLE_EXECUTE_SAFE(path)
+    local chunk, err = love.filesystem.load(path)
+
+    if chunk then
+        local success, result = pcall(chunk)
+        return success, result
+    end
+
+    return false, err
+end
+
 function PUZZLE_DOFILE_SAFE(path)
     local success, result = pcall(dofile, path)
     return success, result
@@ -36,6 +47,7 @@ function PUZZLE_LOAD(levelassetsfolder)
 
     -- Load puzzle files
     if not love.filesystem.exists("puzzle.lua") then
+        cons("No global puzzle script, creating one")
         local success, message = love.filesystem.write("puzzle.lua", [=[
 --[[
     Welcome to puzzle! You can use this file to add custom buttons in Ved globally, which can run any Lua code you want.
@@ -63,17 +75,23 @@ function PUZZLE_LOAD(levelassetsfolder)
 ]=])
     end
 
-    dofile(love.filesystem.getSaveDirectory() .. "/" .. PUZZLE_PATH .. "puzzle_defaults.lua")
+    local success, result = PUZZLE_EXECUTE_SAFE(love.filesystem.getSaveDirectory() .. "/" .. PUZZLE_PATH .. "puzzle_defaults.lua")
+    if success then
+        cons("Loaded default puzzle script")
+    else
+        cons("Error loading default puzzle script")
+        cons(result)
+    end
 
     -- Plugin callbacks
     for _, callback in ipairs(PUZZLE_PLUGIN_CALLBACKS) do
-        local success, result = pcall(callback)
+        success, result = pcall(callback)
         if not success then
             dialog.create("Error in puzzle plugin callback: " .. tostring(result), DBS.OK)
         end
     end
 
-    local success, result = PUZZLE_DOFILE_SAFE(love.filesystem.getSaveDirectory() .. "/puzzle.lua")
+    success, result = PUZZLE_EXECUTE_SAFE("/puzzle.lua")
     if success then
         cons("Loaded user puzzle script")
     else
@@ -82,7 +100,7 @@ function PUZZLE_LOAD(levelassetsfolder)
     end
 
     if levelassetsfolder ~= nil then
-        local success, result = PUZZLE_DOFILE_SAFE(levelassetsfolder .. "/puzzle.lua")
+        success, result = PUZZLE_DOFILE_SAFE(levelassetsfolder .. "/puzzle.lua")
         if success then
             cons("Loaded level-specific puzzle script")
         else
