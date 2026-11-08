@@ -75,7 +75,7 @@ function PUZZLE_LOAD(levelassetsfolder)
 ]=])
     end
 
-    local success, result = PUZZLE_EXECUTE_SAFE(love.filesystem.getSaveDirectory() .. "/" .. PUZZLE_PATH .. "puzzle_defaults.lua")
+    local success, result = PUZZLE_EXECUTE_SAFE(PUZZLE_PATH .. "puzzle_defaults.lua")
     if success then
         cons("Loaded default puzzle script")
     else
@@ -91,7 +91,7 @@ function PUZZLE_LOAD(levelassetsfolder)
         end
     end
 
-    success, result = PUZZLE_EXECUTE_SAFE("/puzzle.lua")
+    success, result = PUZZLE_EXECUTE_SAFE("puzzle.lua")
     if success then
         cons("Loaded user puzzle script")
     else
